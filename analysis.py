@@ -2,6 +2,7 @@
 """
 Module Docstring
 """
+import os
 
 def remove_same_crash(file):
     pass
@@ -53,6 +54,9 @@ def do_comparisons():
     pass
 
 def get_crash_files():
+    path = "/home/vagrant/qsym/outside_tests/crashes"
+    files = os.listdir(path)
+    compare_hashes(files)
     pass
 
 def main():
