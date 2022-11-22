@@ -5,6 +5,7 @@ Module Docstring
 import os
 
 def remove_same_crash(file):
+    os.remove(file)
     pass
     
 def bt_with_gdb():
