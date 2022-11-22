@@ -3,6 +3,9 @@
 Module Docstring
 """
 import os
+import hashlib
+import subprocess
+import gdb
 
 def remove_same_crash(file):
     os.remove(file)
@@ -10,22 +13,22 @@ def remove_same_crash(file):
     
 def bt_with_gdb(files):
     newFileNames = []
-    for i in files:
+    for i in range(len(files)):
         os.system('gdb')
-        os.system('set logging on')
-        os.system('set logging file ' + files[i] + '.log')
-        os.system('quit')
-        os.system('y')
+        gdb.execute('set logging on')
+        gdb.execute('set logging file ' + files[i] + '.log')
+        gdb.execute('quit')
+        gdb.execute('y')
         fileName = 'gdb ' + files[i]
         os.system(fileName)
-        os.system('run')
-        os.system('bt')
-        os.system('quit')
-        os.system('y')
-	newFileNames.append(fileName)
+        gdb.execute('run')
+        gdb.execute('bt')
+        gdb.execute('quit')
+        gdb.execute('y')
+	#newFileNames.append(fileName)
     return newFileNames
 
-def convert_to_hash(same_files, list_of_files):
+"""def convert_to_hash(same_files, list_of_files):
     for i in range(len(list_of_files)):
         # make a hash object
         h = hashlib.sha1()
@@ -56,10 +59,11 @@ def compare_hashes(list_of_files):
                     same_files.append(compare_hash[1]
         
     return same_files
-    
+"""  
 
 def do_comparisons(files):
     newFiles = bt_with_gdb(files)
+    print(newFiles)
     # Can do string by string comparison
     # Compare hash of the bytestream from a file
     # Ambitious: Compare stack frames of the crashes
@@ -67,14 +71,41 @@ def do_comparisons(files):
     pass
 
 def get_crash_files():
-    path = "/home/vagrant/qsym/outside_tests/crashes"
+    path = "/home/andrews/Desktop/teamProject/CrashDumpPythonScripts/crashDumpFiles"
     files = os.listdir(path)
-    compare_hashes(files)
+    print(files)
+    #compare_hashes(files)
     do_comparisons(files)
     pass
 
+def compareToAll(all, string):
+    """Compares string to all strings in all
+    @all    :Array of list
+    @string :String"""
+    for i in range(len(all)):
+        if string == all[i]:
+            print(f'String is similar to string at {i}')
+        else:
+            print("Strings are not similar")
+
+def compareStringsInCrashdumps():
+    """Compare strings in the crash dump file--- To be changed"""
+    """Use back traces to check similarities between crash dumps"""
+    output = []
+    for i in range(10):
+        file = f"id00{i}strings"
+        bashCommand = ["touch", file]
+        bashCommand = ["strings", f"id00{i}"]
+        process = subprocess.run(bashCommand, capture_output=True)
+        output.append(str(process.stdout))
+
+    for i in range(len(output)):
+        print(f"Comparing all strings to {i}")
+        compareToAll(output, output[i])
+
+
 def main():
-    pass
+    get_crash_files()
 
 
 if __name__ == "__main__":
