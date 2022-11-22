@@ -3,6 +3,7 @@
 Module Docstring
 """
 import os
+import hashlib
 
 def remove_same_crash(file):
     os.remove(file)
