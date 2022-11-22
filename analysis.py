@@ -23,10 +23,10 @@ def bt_with_gdb(files):
         os.system('bt')
         os.system('quit')
         os.system('y')
-	newFileNames.append(fileName)
+	#newFileNames.append(fileName)
     return newFileNames
 
-def convert_to_hash(same_files, list_of_files):
+"""def convert_to_hash(same_files, list_of_files):
     for i in range(len(list_of_files)):
         # make a hash object
         h = hashlib.sha1()
@@ -57,7 +57,7 @@ def compare_hashes(list_of_files):
                     same_files.append(compare_hash[1]
         
     return same_files
-    
+"""  
 
 def do_comparisons(files):
     newFiles = bt_with_gdb(files)
@@ -70,7 +70,7 @@ def do_comparisons(files):
 def get_crash_files():
     path = "/home/vagrant/qsym/outside_tests/crashes"
     files = os.listdir(path)
-    compare_hashes(files)
+    #compare_hashes(files)
     do_comparisons(files)
     pass
 
