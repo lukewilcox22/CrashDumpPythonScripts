@@ -62,6 +62,7 @@ def compare_hashes(list_of_files):
 
 def do_comparisons(files):
     newFiles = bt_with_gdb(files)
+    print(newFiles)
     # Can do string by string comparison
     # Compare hash of the bytestream from a file
     # Ambitious: Compare stack frames of the crashes
@@ -69,8 +70,9 @@ def do_comparisons(files):
     pass
 
 def get_crash_files():
-    path = "/home/vagrant/qsym/outside_tests/crashes"
+    path = "/home/andrews/Desktop/teamProject/CrashDumpPythonScripts/crashDumpFiles"
     files = os.listdir(path)
+    print(files)
     #compare_hashes(files)
     do_comparisons(files)
     pass
@@ -85,10 +87,24 @@ def compareToAll(all, string):
         else:
             print("Strings are not similar")
 
+def compareStringsInCrashdumps():
+    """Compare strings in the crash dump file--- To be changed"""
+    """Use back traces to check similarities between crash dumps"""
+    output = []
+    for i in range(10):
+        file = f"id00{i}strings"
+        bashCommand = ["touch", file]
+        bashCommand = ["strings", f"id00{i}"]
+        process = subprocess.run(bashCommand, capture_output=True)
+        output.append(str(process.stdout))
+
+    for i in range(len(output)):
+        print(f"Comparing all strings to {i}")
+        compareToAll(output, output[i])
 
 
 def main():
-    pass
+    get_crash_files()
 
 
 if __name__ == "__main__":
