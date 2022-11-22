@@ -9,19 +9,22 @@ def remove_same_crash(file):
     pass
     
 def bt_with_gdb(files):
+    newFileNames = []
     for i in files:
-	    os.system('gdb')
-	    os.system('set logging on')
-	    os.system('set logging file ' + files[i] + '.log')
-	    os.system('quit')
-	    os.system('y')
-	    fileName = 'gdb ' + files[i]
-	    os.system(fileName)
-	    os.system('run')
-	    os.system('bt')
-	    os.system('quit')
-	    os.system('y')
-    
+        os.system('gdb')
+        os.system('set logging on')
+        os.system('set logging file ' + files[i] + '.log')
+        os.system('quit')
+        os.system('y')
+        fileName = 'gdb ' + files[i]
+        os.system(fileName)
+        os.system('run')
+        os.system('bt')
+        os.system('quit')
+        os.system('y')
+	newFileNames.append(fileName)
+    return newFileNames
+
 def convert_to_hash(same_files, list_of_files):
     for i in range(len(list_of_files)):
         # make a hash object
@@ -55,8 +58,8 @@ def compare_hashes(list_of_files):
     return same_files
     
 
-def do_comparisons():
-    bt_with_gdb()
+def do_comparisons(files):
+    newFiles = bt_with_gdb(files)
     # Can do string by string comparison
     # Compare hash of the bytestream from a file
     # Ambitious: Compare stack frames of the crashes
@@ -67,7 +70,7 @@ def get_crash_files():
     path = "/home/vagrant/qsym/outside_tests/crashes"
     files = os.listdir(path)
     compare_hashes(files)
-    bt_with_gdb(files)
+    do_comparisons(files)
     pass
 
 def main():
