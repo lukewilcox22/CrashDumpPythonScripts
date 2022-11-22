@@ -8,10 +8,19 @@ def remove_same_crash(file):
     os.remove(file)
     pass
     
-def bt_with_gdb():
-    # Will need pngslap to run with GDB
-    # Getting to 'bt' inside of python
-    # Put inside txt file
+def bt_with_gdb(files):
+    for i in files:
+	    os.system('gdb')
+	    os.system('set logging on')
+	    os.system('set logging file ' + files[i] + '.log')
+	    os.system('quit')
+	    os.system('y')
+	    fileName = 'gdb ' + files[i]
+	    os.system(fileName)
+	    os.system('run')
+	    os.system('bt')
+	    os.system('quit')
+	    os.system('y')
     
 def convert_to_hash(same_files, list_of_files):
     for i in range(len(list_of_files)):
@@ -58,6 +67,7 @@ def get_crash_files():
     path = "/home/vagrant/qsym/outside_tests/crashes"
     files = os.listdir(path)
     compare_hashes(files)
+    bt_with_gdb(files)
     pass
 
 def main():
