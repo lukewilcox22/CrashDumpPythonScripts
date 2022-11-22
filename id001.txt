@@ -1,0 +1,70 @@
+=cmd-param-changed,param="logging enabled",value="on"
+^done
+(gdb) 
+&"set args crashDumpFiles/id001\n"
+=cmd-param-changed,param="args",value="crashDumpFiles/id001"
+^done
+(gdb) 
+&"run\n"
+~"Starting program: /home/matthewyfong/CSE_5472/CrashDumpPythonScripts/pngslap crashDumpFiles/id001\n"
+=thread-group-started,id="i1",pid="9849"
+=thread-created,id="1",group-id="i1"
+=library-loaded,id="/lib64/ld-linux-x86-64.so.2",target-name="/lib64/ld-linux-x86-64.so.2",host-name="/lib64/ld-linux-x86-64.so.2",symbols-loaded="0",thread-group="i1",ranges=[{from="0x00007ffff7fd0100",to="0x00007ffff7ff2684"}]
+^running
+*running,thread-id="all"
+(gdb) 
+=library-loaded,id="/usr/local/lib/libpng.so.3",target-name="/usr/local/lib/libpng.so.3",host-name="/usr/local/lib/libpng.so.3",symbols-loaded="0",thread-group="i1",ranges=[{from="0x00007ffff7efeef0",to="0x00007ffff7fb35dc"}]
+=library-loaded,id="/lib/x86_64-linux-gnu/libz.so.1",target-name="/lib/x86_64-linux-gnu/libz.so.1",host-name="/lib/x86_64-linux-gnu/libz.so.1",symbols-loaded="0",thread-group="i1",ranges=[{from="0x00007ffff7edc280",to="0x00007ffff7eecf9b"}]
+=library-loaded,id="/lib/x86_64-linux-gnu/libm.so.6",target-name="/lib/x86_64-linux-gnu/libm.so.6",host-name="/lib/x86_64-linux-gnu/libm.so.6",symbols-loaded="0",thread-group="i1",ranges=[{from="0x00007ffff7d983c0",to="0x00007ffff7e3efa8"}]
+=library-loaded,id="/lib/x86_64-linux-gnu/libc.so.6",target-name="/lib/x86_64-linux-gnu/libc.so.6",host-name="/lib/x86_64-linux-gnu/libc.so.6",symbols-loaded="0",thread-group="i1",ranges=[{from="0x00007ffff7bbb630",to="0x00007ffff7d3027d"}]
+~"\nProgram"
+~" received signal SIGBUS, Bus error.\n"
+~"png_destroy_read_struct (png_ptr_ptr=0x7fffffffdd38, info_ptr_ptr=0x7fffffffdd40, end_info_ptr_ptr=0x0) at pngread.c:1078\n"
+~"1078\t   if (info_ptr_ptr != NULL)\n"
+*stopped,reason="signal-received",signal-name="SIGBUS",signal-meaning="Bus error",frame={addr="0x00007ffff7f5d047",func="png_destroy_read_struct",args=[{name="png_ptr_ptr",value="0x7fffffffdd38"},{name="info_ptr_ptr",value="0x7fffffffdd40"},{name="end_info_ptr_ptr",value="0x0"}],file="pngread.c",fullname="/home/matthewyfong/CSE_5472/CSE5472_Lab1_Fuzzing/libpng-1.2.5/pngread.c",line="1078",arch="i386:x86-64"},thread-id="1",stopped-threads="all",core="0"
+(gdb) 
+&"bt\n"
+~"#0  png_destroy_read_struct (png_ptr_ptr=0x7fffffffdd38, info_ptr_ptr=0x7fffffffdd40, end_info_ptr_ptr=0x0) at pngread.c:1078\n"
+~"#1  0x0000555555555725 in ?? ()\n"
+~"#2  0xd38b89888080e828 in ?? ()\n"
+~"#3  0x4342910000690c0c in ?? ()\n"
+~"#4  0x3b07070f7b757122 in ?? ()\n"
+~"#5  0x0000d16d6e6d3c3b in ?? ()\n"
+~"#6  0x413ff00b115b6554 in ?? ()\n"
+~"#7  0x596364636963df43 in ?? ()\n"
+~"#8  0xdfdff9998986595a in ?? ()\n"
+~"#9  0x2120f91a1a4a4543 in ?? ()\n"
+~"#10 0x6affffff7575ffff in ?? ()\n"
+~"#11 0x1e4449716c6b2b2c in ?? ()\n"
+~"#12 0x0b0b4344436c6866 in ?? ()\n"
+~"#13 0xfbecedec4040400c in ?? ()\n"
+~"#14 0xcbcbf6485445e7e7 in ?? ()\n"
+~"#15 0x68670201019e9eed in ?? ()\n"
+~"#16 0x66c45436e6e7e670 in ?? ()\n"
+~"#17 0xfffff13334336f66 in ?? ()\n"
+~"#18 0x6e6d3848358c8d87 in ?? ()\n"
+~"#19 0xd5e667662a2a2a79 in ?? ()\n"
+~"#20 0x8091928f1716b542 in ?? ()\n"
+~"#21 0x000202223457df81 in ?? ()\n"
+~"#22 0xf6f6857672464746 in ?? ()\n"
+~"#23 0x3d3837736d6efdf6 in ?? ()\n"
+~"#24 0x494a7d9d9a292626 in ?? ()\n"
+~"#25 0x7bfb10103f414049 in ?? ()\n"
+~"#26 0x9996950a0a0a6580 in ?? ()\n"
+~"#27 0xb7b6afa59eb9bbb9 in ?? ()\n"
+~"#28 0x00b3b55d030203b6 in ?? ()\n"
+~"#29 0x7b55c1706b68ff00 in ?? ()\n"
+~"#30 0x4144490a06000028 in ?? ()\n"
+~"#31 0x00007fffffc74854 in ?? ()\n"
+~"#32 0x00007ffff7ffe190 in ?? ()\n"
+~"#33 0x0000000000000000 in ?? ()\n"
+^done
+(gdb) 
+=thread-exited,id="1",group-id="i1"
+=thread-group-exited,id="i1"
+&"Exception ignored in: <gdb._GdbOutputFile object at 0x7fe6b40e68d0>\n"
+&"Traceback (most recent call last):\n"
+&"  File \"/home/linuxbrew/.linuxbrew/Cellar/gdb/12.1_2/share/gdb/python/gdb/__init__.py\", line 47, in flush\n"
+&"    def flush(self):\n"
+&"\n"
+&"KeyboardInterrupt: \n"
