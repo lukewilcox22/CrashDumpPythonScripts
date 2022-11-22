@@ -4,6 +4,7 @@ Module Docstring
 """
 import os
 import hashlib
+import subprocess
 
 def remove_same_crash(file):
     os.remove(file)
@@ -73,6 +74,18 @@ def get_crash_files():
     #compare_hashes(files)
     do_comparisons(files)
     pass
+
+def compareToAll(all, string):
+    """Compares string to all strings in all
+    @all    :Array of list
+    @string :String"""
+    for i in range(len(all)):
+        if string == all[i]:
+            print(f'String is similar to string at {i}')
+        else:
+            print("Strings are not similar")
+
+
 
 def main():
     pass
