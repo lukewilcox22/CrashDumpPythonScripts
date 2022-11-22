@@ -16,7 +16,7 @@ def bt_with_gdb(files):
     newFileNames = []
     for i in range(len(files)):
         gdbmi = GdbController()
-        gdbmi.write(f'-file-exec-file --args pngslap')
+        gdbmi.write(f'-file-exec-file pngslap')
         gdbmi.write(f'set logging file {files[i]}.txt')
         gdbmi.write('set logging on')
         gdbmi.write(f'set args crashes_qsymgenerated_nov10/{files[i]}')

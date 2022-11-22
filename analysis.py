@@ -16,15 +16,11 @@ def bt_with_gdb(files):
     newFileNames = []
     for i in range(len(files)):
         gdbmi = GdbController()
-        gdbmi.write(f'-file-exec-file --args pngslap')
+        gdbmi.write(f'-file-exec-file pngslap')
         gdbmi.write(f'set logging file {files[i]}.txt')
         gdbmi.write('set logging on')
-        gdbmi.write(f'set args crashDumpFiles/{files[i]}')
-        # gdbmi.write(f'set args crashes_qsymgenerated_nov10/{files[i]}')
-        # gdbmi.exit()
+        gdbmi.write(f'set args crashes_qsymgenerated_nov10/{files[i]}')
         fileName = f"{files[i]}.txt"
-        # gdbmi = GdbController()
-        # gdbmi.write(f'--args pngslap crashes_qsymgenerated_nov10/{files[i]}')
         response = gdbmi.write('run')
         print(response)
         gdbmi.write('bt')
@@ -75,7 +71,7 @@ def do_comparisons(files):
     pass
 
 def get_crash_files():
-    path = "/home/matthewyfong/CSE_5472/CrashDumpPythonScripts/crashDumpFiles"
+    path = "/home/matthewyfong/CSE_5472/CrashDumpPythonScripts/crashes_qsymgenerated_nov10"
     files = os.listdir(path)
     print(files)
     #compare_hashes(files)
