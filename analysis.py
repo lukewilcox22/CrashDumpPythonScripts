@@ -5,6 +5,7 @@ Module Docstring
 import os
 import hashlib
 import subprocess
+import gdb
 
 def remove_same_crash(file):
     os.remove(file)
@@ -14,16 +15,16 @@ def bt_with_gdb(files):
     newFileNames = []
     for i in range(len(files)):
         os.system('gdb')
-        os.system('set logging on')
-        os.system('set logging file ' + files[i] + '.log')
-        os.system('quit')
-        os.system('y')
+        gdb.execute('set logging on')
+        gdb.execute('set logging file ' + files[i] + '.log')
+        gdb.execute('quit')
+        gdb.execute('y')
         fileName = 'gdb ' + files[i]
         os.system(fileName)
-        os.system('run')
-        os.system('bt')
-        os.system('quit')
-        os.system('y')
+        gdb.execute('run')
+        gdb.execute('bt')
+        gdb.execute('quit')
+        gdb.execute('y')
 	#newFileNames.append(fileName)
     return newFileNames
 
