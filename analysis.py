@@ -11,7 +11,7 @@ def remove_same_crash(file):
     
 def bt_with_gdb(files):
     newFileNames = []
-    for i in files:
+    for i in len(files):
         os.system('gdb')
         os.system('set logging on')
         os.system('set logging file ' + files[i] + '.log')
