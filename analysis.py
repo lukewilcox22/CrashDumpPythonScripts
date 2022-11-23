@@ -72,14 +72,6 @@ def do_comparisons(files):
     # Ambitious: Compare stack frames of the crashes
     # Find more ways to analyze crash dumps and then somehow compare them
 
-def get_crash_files():
-    path = "/home/matthewyfong/CSE_5472/CrashDumpPythonScripts/crashes_qsymgenerated_nov10"
-    files = os.listdir(path)
-    print(files)
-    #compare_hashes(files)
-    do_comparisons(files)
-    pass
-
 def get_crash_string(path):
     btFlag = False
     file = open(path, 'r')
