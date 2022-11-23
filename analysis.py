@@ -53,32 +53,21 @@ def convert_to_hash(hash_list, list_of_files):
 def compare_hashes(list_of_files):
     hash_list = []
     same_files = []
+    origional_files = []
     
     convert_to_hash(hash_list, list_of_files)
         
     for hash in range(len(hash_list) - 1):
-        if hash_list[hash + 1] not in same_files:
-            if hash_list[hash][1] is hash_list[hash + 1][1]:
-                if hash_list[hash][1] not in same_files:
-                    same_files.append(hash_list[hash][0])
-                same_files.append(hash_list[hash + 1][0])
+        if hash_list[hash][0] not in same_files:
+            for remaining_hash in range(hash + 1, len(hash_list)):
+                if hash_list[remaining_hash][0] not in same_files:
+                    print(f"{hash_list[hash][1]} and {hash_list[remaining_hash][1]}")
+                    if hash_list[hash][1] == hash_list[remaining_hash][1]:
+                        if hash_list[hash][0] not in origional_files:
+                            origional_files.append(hash_list[hash][0])
+                        same_files.append(hash_list[remaining_hash][0])
+    print(origional_files)
     return same_files
- 
-
-def do_comparisons(files):
-    # Can do string by string comparison
-    same_files = compare_hashes(files)
-    print(same_files)
-    # Ambitious: Compare stack frames of the crashes
-    # Find more ways to analyze crash dumps and then somehow compare them
-
-def get_crash_files():
-    path = "/home/matthewyfong/CSE_5472/CrashDumpPythonScripts/crashes_qsymgenerated_nov10"
-    files = os.listdir(path)
-    print(files)
-    #compare_hashes(files)
-    do_comparisons(files)
-    pass
 
 def compareToAll(all, string):
     """Compares string to all strings in all
@@ -110,17 +99,26 @@ def sanitize(filename):
     f = open(filename, 'r')
     s = f.readlines()
     f.close()
-    f= open(filename, 'w')
-    while s[0] != '&"bt\n"':
+    f = open(filename, 'w')
+    while '&"bt\\n"' not in s[0]:
         s.pop(0)
-    while s[0] != '^done':
+    while '^done' not in s[0]:
         f.writelines(s.pop(0))
     f.close()
+
+def do_comparisons(files):
+    # Can do string by string comparison
+    same_files = compare_hashes(files)
+    print(same_files)
+    # Ambitious: Compare stack frames of the crashes
+    # Find more ways to analyze crash dumps and then somehow compare them
     
 def get_crash_files():
     path = args.path
     files = os.listdir(path)
     files_for_analysis = bt_with_gdb(files, path)
+    for file in files_for_analysis:
+        sanitize(file)
     do_comparisons(files_for_analysis)
 
 def main():
