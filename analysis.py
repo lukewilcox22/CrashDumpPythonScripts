@@ -5,7 +5,8 @@ Module Docstring
 import os
 import hashlib
 import subprocess
-import gdb 
+# import gdb
+from pygdbmi.gdbcontroller import GdbController
 
 def remove_same_crash(file):
     os.remove(file)
@@ -14,18 +15,17 @@ def remove_same_crash(file):
 def bt_with_gdb(files):
     newFileNames = []
     for i in range(len(files)):
-        os.system('gdb')
-        gdb.execute('set logging on')
-        gdb.execute('set logging file ' + files[i] + '.log')
-        gdb.execute('quit')
-        gdb.execute('y')
-        fileName = 'gdb ' + files[i]
-        os.system(fileName)
-        gdb.execute('run')
-        gdb.execute('bt')
-        gdb.execute('quit')
-        gdb.execute('y')
-	#newFileNames.append(fileName)
+        gdbmi = GdbController()
+        gdbmi.write(f'-file-exec-file pngslap')
+        gdbmi.write(f'set logging file {files[i]}.txt')
+        gdbmi.write('set logging on')
+        gdbmi.write(f'set args crashes_qsymgenerated_nov10/{files[i]}')
+        fileName = f"{files[i]}.txt"
+        response = gdbmi.write('run')
+        print(response)
+        gdbmi.write('bt')
+        gdbmi.exit()
+        newFileNames.append(fileName)
     return newFileNames
 
 """def convert_to_hash(same_files, list_of_files):
@@ -71,7 +71,7 @@ def do_comparisons(files):
     pass
 
 def get_crash_files():
-    path = "/home/andrews/Desktop/teamProject/CrashDumpPythonScripts/crashDumpFiles"
+    path = "/home/matthewyfong/CSE_5472/CrashDumpPythonScripts/crashes_qsymgenerated_nov10"
     files = os.listdir(path)
     print(files)
     #compare_hashes(files)
