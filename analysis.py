@@ -68,31 +68,49 @@ def compare_hashes(list_of_files):
                         same_files.append(hash_list[remaining_hash][0])
     print(origional_files)
     return same_files
+ 
 
-def compareToAll(all, string):
-    """Compares string to all strings in all
-    @all    :Array of list
-    @string :String"""
-    for i in range(len(all)):
-        if string == all[i]:
-            print(f'String is similar to string at {i}')
-        else:
-            print("Strings are not similar")
+def do_comparisons(files):
+    # Can do string by string comparison
+    same_files = compare_hashes(files)
+    print(same_files)
+    # Ambitious: Compare stack frames of the crashes
+    # Find more ways to analyze crash dumps and then somehow compare them
 
-def compareStringsInCrashdumps():
-    """Compare strings in the crash dump file--- To be changed"""
-    """Use back traces to check similarities between crash dumps"""
-    output = []
-    for i in range(10):
-        file = f"id00{i}strings"
-        bashCommand = ["touch", file]
-        bashCommand = ["strings", f"id00{i}"]
-        process = subprocess.run(bashCommand, capture_output=True)
-        output.append(str(process.stdout))
+def get_crash_string(path):
+    btFlag = False
+    file = open(path, 'r')
+    linesList = file.readlines()
+    for i in range(len(linesList)):
+        if len(linesList[i+1]) == len(linesList[i+2]) and btFlag:
+            crashStr = linesList[i]
+            startIdx = crashStr.find('0x')
+            crashStr = crashStr[startIdx:]
+            break
+        if linesList[i].find('&"bt') == 0:
+            btFlag = True
+    file.close()
+    return crashStr
 
-    for i in range(len(output)):
-        print(f"Comparing all strings to {i}")
-        compareToAll(output, output[i])
+def compareCrashes():
+    crashStrList = []
+    duplicateStr = []
+    duplicateFiles = []
+    path = "/home/luke/CrashDumpPythonScripts/bt_nov10"
+    files = os.listdir(path)
+    for file in files:
+        crashStrList.append(get_crash_string(f'/home/luke/CrashDumpPythonScripts/bt_nov10/{file}'))
+    for i in range(len(crashStrList)):
+        if i not in duplicateStr:
+            for j in range(len(crashStrList)):
+                if j != i:
+                    if j not in duplicateStr:
+                        if crashStrList[i] == crashStrList[j]:
+                            duplicateStr.append(j)
+
+    for num in duplicateStr:
+        duplicateFiles.append(files[num][:len(files[num])-4])
+    return duplicateFiles
 
 def sanitize(filename):
     """Sanitize dump file"""
