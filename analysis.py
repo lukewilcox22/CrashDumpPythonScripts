@@ -20,13 +20,14 @@ def remove_same_crash(file):
     
 def bt_with_gdb(files, path):
     newFileNames = []
+    os.mkdir(f"analysis_{path}")
     for i in range(len(files)):
         if "README" not in files[i]: 
             gdbmi = GdbController()
             gdbmi.write(f'-file-exec-file {args.target_prog}')
-            gdbmi.write(f'set logging file {path}/gdb_{files[i]}.txt')
+            gdbmi.write(f'set logging file analysis_{path}/gdb_{files[i]}.txt')
             gdbmi.write('set logging on')
-            gdbmi.write(f'set args analysis_{path}/{files[i]}')
+            gdbmi.write(f'set args {path}/{files[i]}')
             fileName = f"analysis_{path}/gdb_{files[i]}.txt"
             gdbmi.write('run')
             gdbmi.write('bt')
