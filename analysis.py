@@ -107,31 +107,6 @@ def compareCrashes():
         duplicateFiles.append(files[num][:len(files[num])-4])
     return duplicateFiles
 
-def compareToAll(all, string):
-    """Compares string to all strings in all
-    @all    :Array of list
-    @string :String"""
-    for i in range(len(all)):
-        if string == all[i]:
-            print(f'String is similar to string at {i}')
-        else:
-            print("Strings are not similar")
-
-def compareStringsInCrashdumps():
-    """Compare strings in the crash dump file--- To be changed"""
-    """Use back traces to check similarities between crash dumps"""
-    output = []
-    for i in range(10):
-        file = f"id00{i}strings"
-        bashCommand = ["touch", file]
-        bashCommand = ["strings", f"id00{i}"]
-        process = subprocess.run(bashCommand, capture_output=True)
-        output.append(str(process.stdout))
-
-    for i in range(len(output)):
-        print(f"Comparing all strings to {i}")
-        compareToAll(output, output[i])
-
 def sanitize(filename):
     """Sanitize dump file"""
     f = open(filename, 'r')
