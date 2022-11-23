@@ -115,6 +115,7 @@ def sanitize(filename):
         s.pop(0)
     while s[0] != '^done':
         f.writelines(s.pop(0))
+    f.close()
     
 def get_crash_files():
     path = args.path
