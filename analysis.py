@@ -42,7 +42,7 @@ def convert_to_hash(hash_list, list_of_files):
 
         # open file for reading in binary mode
         with open(list_of_files[i],'rb') as file:
-            # loop till the end of the file
+        # loop till the end of the file
             chunk = 0
             while chunk != b'':
                 # read only 1024 bytes at a time
@@ -63,6 +63,22 @@ def compare_hashes(list_of_files):
                     same_files.append(hash_list[hash][0])
                 same_files.append(hash_list[hash + 1][0])
     return same_files
+ 
+
+def do_comparisons(files):
+    # Can do string by string comparison
+    same_files = compare_hashes(files)
+    print(same_files)
+    # Ambitious: Compare stack frames of the crashes
+    # Find more ways to analyze crash dumps and then somehow compare them
+
+def get_crash_files():
+    path = "/home/matthewyfong/CSE_5472/CrashDumpPythonScripts/crashes_qsymgenerated_nov10"
+    files = os.listdir(path)
+    print(files)
+    #compare_hashes(files)
+    do_comparisons(files)
+    pass
 
 def compareToAll(all, string):
     """Compares string to all strings in all
@@ -89,13 +105,17 @@ def compareStringsInCrashdumps():
         print(f"Comparing all strings to {i}")
         compareToAll(output, output[i])
 
-def do_comparisons(files):
-    # Can do string by string comparison
-    same_files = compare_hashes(files)
-    print(same_files)
-    # Ambitious: Compare stack frames of the crashes
-    # Find more ways to analyze crash dumps and then somehow compare them
-
+def sanitize(filename):
+    """Sanitize dump file"""
+    f = open(filename, 'r')
+    s = f.readlines()
+    f.close()
+    f= open(filename, 'w')
+    while s[0] != '&"bt\n"':
+        s.pop(0)
+    while s[0] != '^done':
+        f.writelines(s.pop(0))
+    
 def get_crash_files():
     path = args.path
     files = os.listdir(path)
