@@ -80,6 +80,41 @@ def get_crash_files():
     do_comparisons(files)
     pass
 
+def get_crash_string(path):
+    btFlag = False
+    file = open(path, 'r')
+    linesList = file.readlines()
+    for i in range(len(linesList)):
+        if len(linesList[i+1]) == len(linesList[i+2]) and btFlag:
+            crashStr = linesList[i]
+            startIdx = crashStr.find('0x')
+            crashStr = crashStr[startIdx:]
+            break
+        if linesList[i].find('&"bt') == 0:
+            btFlag = True
+    file.close()
+    return crashStr
+
+def compareCrashes():
+    crashStrList = []
+    duplicateStr = []
+    duplicateFiles = []
+    path = "/home/luke/CrashDumpPythonScripts/bt_nov10"
+    files = os.listdir(path)
+    for file in files:
+        crashStrList.append(get_crash_string(f'/home/luke/CrashDumpPythonScripts/bt_nov10/{file}'))
+    for i in range(len(crashStrList)):
+        if i not in duplicateStr:
+            for j in range(len(crashStrList)):
+                if j != i:
+                    if j not in duplicateStr:
+                        if crashStrList[i] == crashStrList[j]:
+                            duplicateStr.append(j)
+
+    for num in duplicateStr:
+        duplicateFiles.append(files[num][:len(files[num])-4])
+    return duplicateFiles
+
 def compareToAll(all, string):
     """Compares string to all strings in all
     @all    :Array of list
