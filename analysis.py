@@ -5,78 +5,63 @@ Module Docstring
 import os
 import hashlib
 import subprocess
-# import gdb
 from pygdbmi.gdbcontroller import GdbController
+import argparse
+
+parser = argparse.ArgumentParser(description='Check for identical crash dumps.')
+parser.add_argument('--path', action='store', default='crashes_qsymgenerated_nov10', help='Find where crash dump files are.', required=False)
+parser.add_argument('--target_prog', action='store', default='pngslap', help='Target program for AFL to run.', required=False)
+# parser.add_argument('--target_prog', action='store', help='Target program for AFL to run.', required=True)
+args = parser.parse_args()
 
 def remove_same_crash(file):
     os.remove(file)
     pass
     
-def bt_with_gdb(files):
+def bt_with_gdb(files, path):
     newFileNames = []
     for i in range(len(files)):
-        gdbmi = GdbController()
-        gdbmi.write(f'-file-exec-file pngslap')
-        gdbmi.write(f'set logging file {files[i]}.txt')
-        gdbmi.write('set logging on')
-        gdbmi.write(f'set args crashes_qsymgenerated_nov10/{files[i]}')
-        fileName = f"{files[i]}.txt"
-        response = gdbmi.write('run')
-        print(response)
-        gdbmi.write('bt')
-        gdbmi.exit()
-        newFileNames.append(fileName)
+        if "README" not in files[i]: 
+            gdbmi = GdbController()
+            gdbmi.write(f'-file-exec-file {args.target_prog}')
+            gdbmi.write(f'set logging file {path}/gdb_{files[i]}.txt')
+            gdbmi.write('set logging on')
+            gdbmi.write(f'set args analysis_{path}/{files[i]}')
+            fileName = f"analysis_{path}/gdb_{files[i]}.txt"
+            gdbmi.write('run')
+            gdbmi.write('bt')
+            gdbmi.exit()
+            newFileNames.append(fileName)
     return newFileNames
 
-"""def convert_to_hash(same_files, list_of_files):
+def convert_to_hash(hash_list, list_of_files):
     for i in range(len(list_of_files)):
         # make a hash object
         h = hashlib.sha1()
 
         # open file for reading in binary mode
-        with open(filename,'rb') as file:
-
-        # loop till the end of the file
-        chunk = 0
-        while chunk != b'':
-            # read only 1024 bytes at a time
-            chunk = file.read(1024)
-            h.update(chunk)
-        hash_list.append([list_of_files[i], h.hexdigest()])
+        with open(list_of_files[i],'rb') as file:
+            # loop till the end of the file
+            chunk = 0
+            while chunk != b'':
+                # read only 1024 bytes at a time
+                chunk = file.read(1024)
+                h.update(chunk)
+            hash_list.append([list_of_files[i], h.hexdigest()])
 
 def compare_hashes(list_of_files):
     hash_list = []
     same_files = []
     
-    convert_to_hash(same_files, list_of_files)
+    convert_to_hash(hash_list, list_of_files)
         
-    for hash in range(len(hash_list)) - 1:
-        for compare_hash + 1 in range(len(hash_list)):
-            if compare_hash[0] not in same_files:
-                if hash[1] is compare_hash[1]:
-                    if hash[0] not in same_files:
-                        same_files.append(hash[0])
-                    same_files.append(compare_hash[1]
-        
+    for hash in range(len(hash_list) - 1):
+        if hash_list[hash + 1] not in same_files:
+            if hash_list[hash][1] is hash_list[hash + 1][1]:
+                if hash_list[hash][1] not in same_files:
+                    same_files.append(hash_list[hash][0])
+                same_files.append(hash_list[hash + 1][0])
     return same_files
-"""  
-
-def do_comparisons(files):
-    newFiles = bt_with_gdb(files)
-    print(newFiles)
-    # Can do string by string comparison
-    # Compare hash of the bytestream from a file
-    # Ambitious: Compare stack frames of the crashes
-    # Find more ways to analyze crash dumps and then somehow compare them
-    pass
-
-def get_crash_files():
-    path = "/home/matthewyfong/CSE_5472/CrashDumpPythonScripts/crashes_qsymgenerated_nov10"
-    files = os.listdir(path)
-    print(files)
-    #compare_hashes(files)
-    do_comparisons(files)
-    pass
 
 def compareToAll(all, string):
     """Compares string to all strings in all
@@ -103,6 +88,18 @@ def compareStringsInCrashdumps():
         print(f"Comparing all strings to {i}")
         compareToAll(output, output[i])
 
+def do_comparisons(files):
+    # Can do string by string comparison
+    same_files = compare_hashes(files)
+    print(same_files)
+    # Ambitious: Compare stack frames of the crashes
+    # Find more ways to analyze crash dumps and then somehow compare them
+
+def get_crash_files():
+    path = args.path
+    files = os.listdir(path)
+    files_for_analysis = bt_with_gdb(files, path)
+    do_comparisons(files_for_analysis)
 
 def main():
     get_crash_files()
