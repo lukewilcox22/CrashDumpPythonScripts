@@ -144,7 +144,6 @@ def get_crash_string(path):
     btFlag = False
     
     file = open(path, 'r')
-    print(path)
     linesList = file.readlines()
     for i in range(len(linesList)):
         if len(linesList[i+1]) == len(linesList[i+2]) and btFlag:
@@ -157,14 +156,16 @@ def get_crash_string(path):
     file.close()
     return crashStr
 
-def compareCrashes(path):
+def compareCrashes(files):
     """Compares crashes based on anticipated crash string from backtrace."""
     crashStrList = []
     duplicateStr = []
-    duplicateFiles = []
-    files = path
+    uniqueFileIdx = []
+    uniqueFiles = []
+    
     for file in files:
         crashStrList.append(get_crash_string(f'{file}'))
+
     for i in range(len(crashStrList)):
         if i not in duplicateStr:
             for j in range(len(crashStrList)):
@@ -173,10 +174,15 @@ def compareCrashes(path):
                         if crashStrList[i] == crashStrList[j]:
                             duplicateStr.append(j)
 
-    for num in duplicateStr:
-        duplicateFiles.append(files[num][:len(files[num])-4])
-    print(f"Analysis of the backtrace has determined that {len(crashStrList)} were unique out of {len(crashStrList)}")
-    return duplicateFiles
+    for i in range(len(crashStrList)):
+        if i not in duplicateStr:
+            uniqueFileIdx.append(i)
+
+    for num in uniqueFileIdx:
+        uniqueFiles.append(files[num][:len(files[num])-4])
+
+    print(f"Analysis of the backtrace has determined that {len(uniqueFileIdx)} were unique out of {len(crashStrList)}")
+    return uniqueFiles
 
 def preform_analysis(crash_same_files, hash_same_files):
     """Do a variety of comparisons on the backtrace to determine uniqueness.
