@@ -105,7 +105,6 @@ def sanitize(filename):
     s = f.readlines()
     f.close()
     f = open(filename, 'w')
-    print(filename)
     while '&"bt\\n"' not in s[0]:
         s.pop(0)
     while '^done' not in s[0]:
@@ -124,6 +123,7 @@ def compare_hashes(list_of_files):
     hash_list = []
     same_files = []
     origional_files = []
+    no_files_found = True
 
     for file in list_of_files:
         sanitize(file)
@@ -134,11 +134,14 @@ def compare_hashes(list_of_files):
         if hash_list[hash][0] not in same_files:
             for remaining_hash in range(hash + 1, len(hash_list)):
                 if hash_list[remaining_hash][0] not in same_files:
-                    print(f"{hash_list[hash][1]} and {hash_list[remaining_hash][1]}")
                     if hash_list[hash][1] == hash_list[remaining_hash][1]:
                         if hash_list[hash][0] not in origional_files:
                             origional_files.append(hash_list[hash][0])
+                            no_files_found = False
                         same_files.append(hash_list[remaining_hash][0])
+            if no_files_found:
+                origional_files.append(hash_list[hash][0])
+        no_files_found = True
     print(f"Hashing has determined that {len(origional_files)} were unique out of {len(list_of_files)}")
     return same_files
 
@@ -165,7 +168,11 @@ def get_crash_string(path):
     return crashStr
 
 def compareCrashes(files):
-    """Compares crashes based on anticipated crash string from backtrace."""
+    """Compares crashes based on anticipated crash string from backtrace.
+    
+    Keyword arguments:
+    files -- list of backtrace files
+    """
     crashStrList = []
     duplicateStr = []
     uniqueFileIdx = []
@@ -189,7 +196,7 @@ def compareCrashes(files):
     for num in uniqueFileIdx:
         uniqueFiles.append(files[num][:len(files[num])-4])
 
-    print(f"Analysis of the backtrace has determined that {len(uniqueFileIdx)} were unique out of {len(crashStrList)}")
+    print(f"Analysis of the backtrace has determined that {len(files) - len(uniqueFileIdx)} were unique out of {len(crashStrList)}")
     return uniqueFiles
 
 def preform_analysis(crash_same_files, hash_same_files):
