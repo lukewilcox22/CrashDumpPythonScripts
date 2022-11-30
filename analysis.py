@@ -207,7 +207,7 @@ def preform_analysis(crash_same_files, hash_same_files):
     os.mkdir("same_crash")
     for file in crash_dup_in_both:
         # os.replace(f"{Path.cwd()}/{file}", f"{Path.cwd()}/same_crash/{file[file.find('/') + 1 :]}")
-        Path(f"{Path.cwd()}/{file[file.find('id:'):]}.txt").rename(f"{Path.cwd()}/same_crash/{file[file.find('id:'):]}.txt")
+        Path(f"{Path.cwd()}/{file[file.find('id:'):]}").rename(f"{Path.cwd()}/same_crash/{file[file.find('id:'):]}")
 
 
     print(f"The following has been determined to can be the same crash and will be moved to a new folder: {indetermined_same_crash}")
@@ -216,7 +216,7 @@ def preform_analysis(crash_same_files, hash_same_files):
     os.mkdir("potential_duplicate")
     for file in indetermined_same_crash:
         # os.replace(f"{Path.cwd()}/{file}", f"{Path.cwd()}/potential_duplicate/{file[file.find('/') + 1 :]}")
-        Path(f"{Path.cwd()}/{file[file.find('id:'):]}.txt").rename(f"{Path.cwd()}/potential_duplicate/{file[file.find('id:'):]}.txt")
+        Path(f"{Path.cwd()}/{file[file.find('id:'):]}").rename(f"{Path.cwd()}/potential_duplicate/{file[file.find('id:'):]}")
 
 
     print(f"Backtrace files can be found in a new folder for further investigation.")
