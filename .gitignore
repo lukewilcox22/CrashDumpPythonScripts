@@ -1,6 +1,6 @@
 analysis*/
 same_crash/
-potential_crash/
+potential_duplicate/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

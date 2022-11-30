@@ -22,6 +22,7 @@ from pygdbmi.gdbcontroller import GdbController
 import argparse
 from pathlib import Path
 import shutil
+import json
 
 parser = argparse.ArgumentParser(
     description='Check for identical crash dumps.'
@@ -55,7 +56,6 @@ def bt_with_gdb(files, path):
     Returns:
     list -- an array of the path to the created backtrace files
     """
-    print(args.target_prog)
     newFileNames = []
     if os.path.exists(f"analysis_{path}"):
         shutil.rmtree(f"analysis_{path}")
@@ -143,6 +143,13 @@ def compare_hashes(list_of_files):
                 origional_files.append(hash_list[hash][0])
         no_files_found = True
     print(f"Hashing has determined that {len(origional_files)} were unique out of {len(list_of_files)}")
+    for origional_file in origional_files:
+        origional_file = origional_file[origional_file.find('gdb')+1 :]
+        origional_file = origional_file.replace(".txt", "")
+    print(json.dumps(origional_files))
+    for same_file in same_files:
+        same_file = same_file[same_file.find('gdb')+1 :]
+        same_file = same_file.replace(".txt", "")
     return same_files
 
 def get_crash_string(path):
@@ -175,19 +182,21 @@ def compareCrashes(files):
     """
     crashStrList = []
     duplicateStr = []
+    duplicateFiles = []
     uniqueFileIdx = []
     uniqueFiles = []
     
     for file in files:
-        crashStrList.append(get_crash_string(f'{file}'))
+        crashStrList.append([file, get_crash_string(f'{file}')])
 
     for i in range(len(crashStrList)):
         if i not in duplicateStr:
             for j in range(len(crashStrList)):
                 if j != i:
                     if j not in duplicateStr:
-                        if crashStrList[i] == crashStrList[j]:
+                        if crashStrList[i][1] == crashStrList[j][1]:
                             duplicateStr.append(j)
+                            duplicateFiles.append(crashStrList[j][0])
 
     for i in range(len(crashStrList)):
         if i not in duplicateStr:
@@ -196,8 +205,15 @@ def compareCrashes(files):
     for num in uniqueFileIdx:
         uniqueFiles.append(files[num][:len(files[num])-4])
 
-    print(f"Analysis of the backtrace has determined that {len(files) - len(uniqueFileIdx)} were unique out of {len(crashStrList)}")
-    return uniqueFiles
+    print(f"Analysis of the backtrace has determined that {len(uniqueFileIdx)} were unique out of {len(crashStrList)}")
+    for uniqueFile in uniqueFiles:
+        uniqueFile = uniqueFile[uniqueFile.find('gdb')+1 :]
+        uniqueFile = uniqueFile.replace(".txt", "")
+    print(json.dumps(uniqueFiles))
+    for duplicateFile in duplicateFiles:
+        duplicateFile = duplicateFile[duplicateFile.find('gdb')+1 :]
+        duplicateFile = duplicateFile.replace(".txt", "")
+    return duplicateFiles
 
 def preform_analysis(crash_same_files, hash_same_files):
     """Do a variety of comparisons on the backtrace to determine uniqueness.
@@ -214,8 +230,7 @@ def preform_analysis(crash_same_files, hash_same_files):
     os.mkdir("same_crash")
     for file in crash_dup_in_both:
         # os.replace(f"{Path.cwd()}/{file}", f"{Path.cwd()}/same_crash/{file[file.find('/') + 1 :]}")
-        Path(f"{Path.cwd()}/{args.path}/{file[file.find('id:'):]}").rename(f"{Path.cwd()}/same_crash/{file[file.find('id:'):]}")
-
+        Path(f"{Path.cwd()}/{args.path}/{file[file.find('id:'):].replace('.txt', '')}").rename(f"{Path.cwd()}/same_crash/{file[file.find('id:'):].replace('.txt', '')}")
 
     print(f"The following has been determined to can be the same crash and will be moved to a new folder: {indetermined_same_crash}")
     if os.path.exists("potential_duplicate"):
@@ -223,7 +238,7 @@ def preform_analysis(crash_same_files, hash_same_files):
     os.mkdir("potential_duplicate")
     for file in indetermined_same_crash:
         # os.replace(f"{Path.cwd()}/{file}", f"{Path.cwd()}/potential_duplicate/{file[file.find('/') + 1 :]}")
-        Path(f"{Path.cwd()}/{args.path}/{file[file.find('id:'):]}").rename(f"{Path.cwd()}/potential_duplicate/{file[file.find('id:'):]}")
+        Path(f"{Path.cwd()}/{args.path}/{file[file.find('id:'):].replace('.txt', '')}").rename(f"{Path.cwd()}/potential_duplicate/{file[file.find('id:'):].replace('.txt', '')}")
 
 
     print(f"Backtrace files can be found in a new folder for further investigation.")
