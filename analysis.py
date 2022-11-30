@@ -43,7 +43,13 @@ parser.add_argument(
     help='Target binary to produce crashes.', 
     required=True
 )
-# parser.add_argument('--target_prog', action='store', help='Target program for AFL to run.', required=True)
+parser.add_argument(
+    "-d",
+    "--debug",
+    action="store_true",
+    default=False,
+    required=False
+)
 args = parser.parse_args()
     
 def bt_with_gdb(files, path):
@@ -146,7 +152,7 @@ def compare_hashes(list_of_files):
     for origional_file in origional_files:
         origional_file = origional_file[origional_file.find('gdb')+1 :]
         origional_file = origional_file.replace(".txt", "")
-    print(json.dumps(origional_files))
+    print(json.dumps(origional_files) + "\n")
     for same_file in same_files:
         same_file = same_file[same_file.find('gdb')+1 :]
         same_file = same_file.replace(".txt", "")
@@ -209,7 +215,7 @@ def compareCrashes(files):
     for uniqueFile in uniqueFiles:
         uniqueFile = uniqueFile[uniqueFile.find('gdb')+1 :]
         uniqueFile = uniqueFile.replace(".txt", "")
-    print(json.dumps(uniqueFiles))
+    print(json.dumps(uniqueFiles) + "\n")
     for duplicateFile in duplicateFiles:
         duplicateFile = duplicateFile[duplicateFile.find('gdb')+1 :]
         duplicateFile = duplicateFile.replace(".txt", "")
@@ -224,21 +230,23 @@ def preform_analysis(crash_same_files, hash_same_files):
     """
     crash_dup_in_both = set(crash_same_files) & set(hash_same_files)
     indetermined_same_crash = set(crash_same_files) - set(hash_same_files) - set(crash_dup_in_both)
-    print(f"The following has been determined to be the same crash and will be moved to a new folder: {crash_dup_in_both}")
-    if os.path.exists("same_crash"):
-        shutil.rmtree("same_crash")
-    os.mkdir("same_crash")
-    for file in crash_dup_in_both:
-        # os.replace(f"{Path.cwd()}/{file}", f"{Path.cwd()}/same_crash/{file[file.find('/') + 1 :]}")
-        Path(f"{Path.cwd()}/{args.path}/{file[file.find('id:'):].replace('.txt', '')}").rename(f"{Path.cwd()}/same_crash/{file[file.find('id:'):].replace('.txt', '')}")
+    print(f"The following {len(crash_dup_in_both)} has been determined to be the same crash and will be moved to a new folder: {crash_dup_in_both}")
+    print(json.dumps(list(crash_dup_in_both)) + "\n")
+    if args.debug:
+        if os.path.exists("same_crash"):
+            shutil.rmtree("same_crash")
+        os.mkdir("same_crash")
+        for file in crash_dup_in_both:
+            Path(f"{Path.cwd()}/{args.path}/{file[file.find('id:'):].replace('.txt', '')}").rename(f"{Path.cwd()}/same_crash/{file[file.find('id:'):].replace('.txt', '')}")
 
-    print(f"The following has been determined to can be the same crash and will be moved to a new folder: {indetermined_same_crash}")
-    if os.path.exists("potential_duplicate"):
-        shutil.rmtree("potential_duplicate")
-    os.mkdir("potential_duplicate")
-    for file in indetermined_same_crash:
-        # os.replace(f"{Path.cwd()}/{file}", f"{Path.cwd()}/potential_duplicate/{file[file.find('/') + 1 :]}")
-        Path(f"{Path.cwd()}/{args.path}/{file[file.find('id:'):].replace('.txt', '')}").rename(f"{Path.cwd()}/potential_duplicate/{file[file.find('id:'):].replace('.txt', '')}")
+    print(f"The following {len(indetermined_same_crash)} has been determined to could be the same crash and will be moved to a new folder:")
+    print(json.dumps(list(indetermined_same_crash)) + "\n")
+    if args.debug:
+        if os.path.exists("potential_duplicate"):
+            shutil.rmtree("potential_duplicate")
+        os.mkdir("potential_duplicate")
+        for file in indetermined_same_crash:
+            Path(f"{Path.cwd()}/{args.path}/{file[file.find('id:'):].replace('.txt', '')}").rename(f"{Path.cwd()}/potential_duplicate/{file[file.find('id:'):].replace('.txt', '')}")
 
 
     print(f"Backtrace files can be found in a new folder for further investigation.")
