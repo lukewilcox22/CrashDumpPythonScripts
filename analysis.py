@@ -21,11 +21,13 @@ import subprocess
 from pygdbmi.gdbcontroller import GdbController
 import argparse
 from pathlib import Path
+import shutil
 
 parser = argparse.ArgumentParser(
     description='Check for identical crash dumps.'
 )
 parser.add_argument(
+    '-p', 
     '--path', 
     action='store', 
     # default='crashes_qsymgenerated_nov10', 
@@ -33,6 +35,7 @@ parser.add_argument(
     required=True
 )
 parser.add_argument(
+    '-t', 
     '--target_prog', 
     action='store', 
     # default='pngslap', 
@@ -52,7 +55,10 @@ def bt_with_gdb(files, path):
     Returns:
     list -- an array of the path to the created backtrace files
     """
+    print(args.target_prog)
     newFileNames = []
+    if os.path.exists(f"analysis_{path}"):
+        shutil.rmtree(f"analysis_{path}")
     os.mkdir(f"analysis_{path}")
     for i in range(len(files)):
         if "README" not in files[i]: 
@@ -99,6 +105,7 @@ def sanitize(filename):
     s = f.readlines()
     f.close()
     f = open(filename, 'w')
+    print(filename)
     while '&"bt\\n"' not in s[0]:
         s.pop(0)
     while '^done' not in s[0]:
@@ -142,11 +149,12 @@ def get_crash_string(path):
     path -- the backtrace file
     """
     btFlag = False
+    crashStr = ""
     
     file = open(path, 'r')
     linesList = file.readlines()
-    for i in range(len(linesList)):
-        if len(linesList[i+1]) == len(linesList[i+2]) and btFlag:
+    for i in range(len(linesList)-1):
+        if len(linesList[i]) == len(linesList[i+1]) and btFlag:
             crashStr = linesList[i]
             startIdx = crashStr.find('0x')
             crashStr = crashStr[startIdx:]
@@ -194,6 +202,8 @@ def preform_analysis(crash_same_files, hash_same_files):
     crash_dup_in_both = set(crash_same_files) & set(hash_same_files)
     indetermined_same_crash = set(crash_same_files) - set(hash_same_files) - set(crash_dup_in_both)
     print(f"The following has been determined to be the same crash and will be moved to a new folder: {crash_dup_in_both}")
+    if os.path.exists("same_crash"):
+        shutil.rmtree("same_crash")
     os.mkdir("same_crash")
     for file in crash_dup_in_both:
         # os.replace(f"{Path.cwd()}/{file}", f"{Path.cwd()}/same_crash/{file[file.find('/') + 1 :]}")
@@ -201,6 +211,8 @@ def preform_analysis(crash_same_files, hash_same_files):
 
 
     print(f"The following has been determined to can be the same crash and will be moved to a new folder: {indetermined_same_crash}")
+    if os.path.exists("potential_duplicate"):
+        shutil.rmtree("potential_duplicate")
     os.mkdir("potential_duplicate")
     for file in indetermined_same_crash:
         # os.replace(f"{Path.cwd()}/{file}", f"{Path.cwd()}/potential_duplicate/{file[file.find('/') + 1 :]}")
