@@ -31,7 +31,7 @@ parser.add_argument(
     '-p', 
     '--path', 
     action='store', 
-    # default='crashes_qsymgenerated_nov10', 
+    # default='crashes', 
     help='Find where crash dump files are.',
     required=True
 )
