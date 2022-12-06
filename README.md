@@ -8,6 +8,7 @@ How to run:
     Prerequisites:
         - Prepared folder with crash files from AFL/QSYM in working directory
         - Target program that was ran to find crashes (already compiled for GDB)
+        - Download and install GDB
         - Download pygdbmi using steps found in https://github.com/cs01/pygdbmi
     Running:
         - $ python3 analysis.py --path [path to crash directories] --target_prog [name of target program] -m
