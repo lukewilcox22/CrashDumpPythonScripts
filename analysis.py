@@ -44,8 +44,8 @@ parser.add_argument(
     required=True
 )
 parser.add_argument(
-    "-d",
-    "--debug",
+    "-m",
+    "--move",
     action="store_true",
     default=False,
     required=False
@@ -245,7 +245,7 @@ def preform_analysis(crash_same_files, hash_same_files):
     print(f"The following {len(crash_dup_in_both)} has been determined to be the same crash and will be moved to a new folder: {crash_dup_in_both}")
     print(json.dumps(list(crash_dup_in_both)) + "\n")
     # Create new folder for duplicate crashes
-    if args.debug:
+    if args.move:
         if os.path.exists("same_crash"):
             shutil.rmtree("same_crash")
         os.mkdir("same_crash")
@@ -255,7 +255,7 @@ def preform_analysis(crash_same_files, hash_same_files):
     print(f"The following {len(indetermined_same_crash)} has been determined to could be the same crash and will be moved to a new folder:")
     print(json.dumps(list(indetermined_same_crash)) + "\n")
     # Create new folder for potential duplicate crashes
-    if args.debug:
+    if args.move:
         if os.path.exists("potential_duplicate"):
             shutil.rmtree("potential_duplicate")
         os.mkdir("potential_duplicate")
