@@ -68,6 +68,7 @@ def bt_with_gdb(files, path):
     os.mkdir(f"analysis_{path}")
     for i in range(len(files)):
         if "README" not in files[i]: 
+            # Create a log file containing the backtrace for each file
             gdbmi = GdbController()
             gdbmi.write(f'-file-exec-file {args.target_prog}')
             gdbmi.write(f'set logging file analysis_{path}/gdb_{files[i]}.txt')
@@ -111,6 +112,7 @@ def sanitize(filename):
     s = f.readlines()
     f.close()
     f = open(filename, 'w')
+    # Remove contents from log file that is not the backtrace
     while '&"bt\\n"' not in s[0]:
         s.pop(0)
     while '^done' not in s[0]:
@@ -134,8 +136,10 @@ def compare_hashes(list_of_files):
     for file in list_of_files:
         sanitize(file)
     
+    # convert files to hashes
     convert_to_hash(hash_list, list_of_files)
-        
+    
+    # Compare the hashes of each file to determine equality
     for hash in range(len(hash_list) - 1):
         if hash_list[hash][0] not in same_files:
             for remaining_hash in range(hash + 1, len(hash_list)):
@@ -148,6 +152,8 @@ def compare_hashes(list_of_files):
             if no_files_found:
                 origional_files.append(hash_list[hash][0])
         no_files_found = True
+
+    # Print results of the comparisons
     print(f"Hashing has determined that {len(origional_files)} were unique out of {len(list_of_files)}")
     for origional_file in origional_files:
         origional_file = origional_file[origional_file.find('gdb')+1 :]
@@ -166,9 +172,11 @@ def get_crash_string(path):
     """
     btFlag = False
     crashStr = ""
-    
+    # Read all lines from the file
     file = open(path, 'r')
     linesList = file.readlines()
+
+    # Identify the line that contains the crash
     for i in range(len(linesList)-1):
         if len(linesList[i]) == len(linesList[i+1]) and btFlag:
             crashStr = linesList[i]
@@ -177,6 +185,7 @@ def get_crash_string(path):
             break
         if linesList[i].find('&"bt') == 0:
             btFlag = True
+    # Return the sting of the crash
     file.close()
     return crashStr
 
@@ -195,6 +204,7 @@ def compareCrashes(files):
     for file in files:
         crashStrList.append([file, get_crash_string(f'{file}')])
 
+    # Compare the crash strings of each crash found
     for i in range(len(crashStrList)):
         if i not in duplicateStr:
             for j in range(len(crashStrList)):
@@ -204,6 +214,7 @@ def compareCrashes(files):
                             duplicateStr.append(j)
                             duplicateFiles.append(crashStrList[j][0])
 
+    # Identify unique files
     for i in range(len(crashStrList)):
         if i not in duplicateStr:
             uniqueFileIdx.append(i)
@@ -211,6 +222,7 @@ def compareCrashes(files):
     for num in uniqueFileIdx:
         uniqueFiles.append(files[num][:len(files[num])-4])
 
+    # Print results from the comparisons
     print(f"Analysis of the backtrace has determined that {len(uniqueFileIdx)} were unique out of {len(crashStrList)}")
     for uniqueFile in uniqueFiles:
         uniqueFile = uniqueFile[uniqueFile.find('gdb')+1 :]
@@ -232,6 +244,7 @@ def preform_analysis(crash_same_files, hash_same_files):
     indetermined_same_crash = set(crash_same_files) - set(hash_same_files) - set(crash_dup_in_both)
     print(f"The following {len(crash_dup_in_both)} has been determined to be the same crash and will be moved to a new folder: {crash_dup_in_both}")
     print(json.dumps(list(crash_dup_in_both)) + "\n")
+    # Create new folder for duplicate crashes
     if args.debug:
         if os.path.exists("same_crash"):
             shutil.rmtree("same_crash")
@@ -241,6 +254,7 @@ def preform_analysis(crash_same_files, hash_same_files):
 
     print(f"The following {len(indetermined_same_crash)} has been determined to could be the same crash and will be moved to a new folder:")
     print(json.dumps(list(indetermined_same_crash)) + "\n")
+    # Create new folder for potential duplicate crashes
     if args.debug:
         if os.path.exists("potential_duplicate"):
             shutil.rmtree("potential_duplicate")
