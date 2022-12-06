@@ -21,11 +21,17 @@ Steps for QSYM Vagrant environment:
 
     Install Vagrant:
 
-    - Follow Windows instructions from vagrant website
+    - Download VagrantFile from https://app.vagrantup.com/insuyun/boxes/qsym
+    - In Folder with VagrantFile run:
+        - $ vagrant init
     - In VagrantFile, edit it so it includes inside of “config.vm.provider "virtualbox" do |v|”
         - vb.memory = 4096 
         - vb   .cpus = 4 
         - vb.customize [ "modifyvm", :id, "--uartmode1", "disconnected" ]
+    - Start up VM:
+        - $ vagrant up
+    - ssh into VM:
+        - $ vagrant ssh
 
     Run libpng in Vagrant:
     - EVERYTIME Run in home directory $ sudo sysctl --system
